@@ -1,9 +1,9 @@
 import React from 'react';
 import { ThemeProvider } from 'styled-components/native';
-import light from '../styles/themes/light';
+import dark from '../styles/themes/dark';
 
 const Providers: React.FC = ({ children }) => (
-  <ThemeProvider theme={light}>{children}</ThemeProvider>
+  <ThemeProvider theme={dark}>{children}</ThemeProvider>
 );
 
 export default Providers;
