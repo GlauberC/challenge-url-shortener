@@ -3,9 +3,9 @@ export default {
 
   colors: {
     prim: '#0DC0C0',
-    sec: '#21252B',
+    sec: '#ffffff',
     background: '#21252B',
-    placeholder: '#d4d4d4',
+    placeholder: '#6d6d6d',
     text1: '#ffffff',
     text2: '#858d91',
     text3: '#0DC0C0',
