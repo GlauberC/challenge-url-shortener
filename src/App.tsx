@@ -1,13 +1,11 @@
 import React from 'react';
-import { View, Text } from 'react-native';
 import Providers from './providers';
+import Routes from './routes';
 
 const App: React.FC = () => {
   return (
     <Providers>
-      <View>
-        <Text>Component App</Text>
-      </View>
+      <Routes />
     </Providers>
   );
 };
