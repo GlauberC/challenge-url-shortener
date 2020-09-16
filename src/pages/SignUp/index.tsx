@@ -85,7 +85,7 @@ const SignUp: React.FC = () => {
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
         setErrors(getValidationErros(err));
-      } else if (err.response.data.error === 'Bad Request') {
+      } else if (err.response?.data.error === 'Bad Request') {
         err.response.data.validation.login &&
           setErrUserName('Esse username já está em uso');
         err.response.data.validation.email &&
