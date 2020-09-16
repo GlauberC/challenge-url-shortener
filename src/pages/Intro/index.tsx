@@ -16,7 +16,7 @@ const Intro: React.FC = () => {
         </S.IntroMessage>
       </S.Logo>
       <S.ButtonGroup>
-        <ButtonFill>Entrar</ButtonFill>
+        <ButtonFill onPress={() => navigate('SignIn')}>Entrar</ButtonFill>
         <ButtonBorder onPress={() => navigate('SignUp')}>
           Cadastrar
         </ButtonBorder>
