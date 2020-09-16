@@ -1,10 +1,10 @@
 import React, { ReactNode } from 'react';
-import { RectButtonProperties } from 'react-native-gesture-handler';
-import { ActivityIndicator } from 'react-native';
+import { TouchableOpacityProps, ActivityIndicator } from 'react-native';
+
 import { useTheme } from 'styled-components/native';
 import * as S from './styles';
 
-interface IButton extends RectButtonProperties {
+interface IButton extends TouchableOpacityProps {
   children: ReactNode;
   loading?: boolean;
 }
@@ -12,7 +12,7 @@ interface IButton extends RectButtonProperties {
 const ButtonFill: React.FC<IButton> = ({ children, loading, ...rest }) => {
   const { colors } = useTheme();
   return (
-    <S.Container {...rest}>
+    <S.Container {...rest} activeOpacity={0.5}>
       {loading ? (
         <ActivityIndicator color={colors.text1} />
       ) : (

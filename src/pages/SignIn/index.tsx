@@ -1,8 +1,9 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { TextInput, Modal } from 'react-native';
+import { TextInput } from 'react-native';
 import * as Yup from 'yup';
 
 import { useNavigation } from '@react-navigation/native';
+import AlertModal from '../../components/AlertModal';
 import { useAuth } from '../../providers/auth.provider';
 import Input from '../../components/Input';
 import * as S from './styles';
@@ -14,15 +15,14 @@ import ButtonBorder from '../../components/ButtonBorder';
 interface IModalData {
   titleButton: string;
   message: string;
-  status: 'success' | 'error';
 }
 
 const SignIn: React.FC = () => {
   const { navigate } = useNavigation();
   const { signIn, loading } = useAuth();
 
-  const [userName, setUserName] = useState('');
-  const [password, setPassword] = useState('');
+  const [userName, setUserName] = useState('userteste');
+  const [password, setPassword] = useState('user123');
 
   const [isShowModal, setIsShowModal] = useState(false);
   const [modalData, setModalData] = useState<IModalData>();
@@ -42,19 +42,6 @@ const SignIn: React.FC = () => {
     errors.password && setErrPassword(errors.password);
   }, []);
 
-  const handleMessageModal = useCallback((data: IModalData) => {
-    setModalData(data);
-    setIsShowModal(true);
-  }, []);
-
-  const handleOkModal = useCallback(() => {
-    if (modalData?.status === 'error') {
-      setIsShowModal(false);
-    } else {
-      navigate('Intro');
-    }
-  }, [modalData?.status, navigate]);
-
   const handleSignIn = useCallback(async () => {
     resetErrors();
     try {
@@ -64,42 +51,34 @@ const SignIn: React.FC = () => {
       if (err instanceof Yup.ValidationError) {
         setErrors(getValidationErros(err));
       } else if (err.response?.data.status === 403) {
-        handleMessageModal({
+        setModalData({
           message:
-            'Credenciais inválidas, verifique seu username e digite novamente sua senha',
-          titleButton: 'Ok',
-          status: 'error',
+            'Credenciais incorretas. Verifique seu username e digite novamente sua senha',
+          titleButton: 'OK',
         });
+        setIsShowModal(true);
       } else {
-        handleMessageModal({
+        setModalData({
           message:
-            'Houve um erro inesperado, verifique sua conexão com a internet ou tente novamente mais tarde ',
-          titleButton: 'Ok',
-          status: 'error',
+            'Houve um erro inesperado, verifique sua conexão com a internet ou tente novamente mais tarde',
+          titleButton: 'OK',
         });
+        setIsShowModal(true);
       }
     }
-  }, [handleMessageModal, password, resetErrors, setErrors, signIn, userName]);
+  }, [password, resetErrors, setErrors, signIn, userName]);
 
   return (
     <S.Container>
-      <Modal
-        visible={isShowModal}
-        statusBarTranslucent
-        transparent
-        animationType="fade"
-      >
-        <S.ModalShadow>
-          <S.ModalContainer>
-            <S.ModalText>{modalData?.message}</S.ModalText>
-
-            <ButtonBorder onPress={handleOkModal}>
-              {modalData?.titleButton}
-            </ButtonBorder>
-          </S.ModalContainer>
-        </S.ModalShadow>
-      </Modal>
-
+      {modalData?.titleButton && (
+        <AlertModal
+          message={modalData.message}
+          titleButton={modalData.titleButton}
+          toggleState={isShowModal}
+          close={() => setIsShowModal(false)}
+          handlePressed={() => setIsShowModal(false)}
+        />
+      )}
       <S.Form>
         <Input
           iconName="account-box"
