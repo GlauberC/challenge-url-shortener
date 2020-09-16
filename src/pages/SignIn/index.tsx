@@ -17,44 +17,29 @@ interface IModalData {
   status: 'success' | 'error';
 }
 
-const SignUp: React.FC = () => {
+const SignIn: React.FC = () => {
   const { navigate } = useNavigation();
-  const { signUp, loading } = useAuth();
+  const { signIn, loading } = useAuth();
 
-  const [name, setName] = useState('');
   const [userName, setUserName] = useState('');
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [rPassword, setRPassword] = useState('');
 
   const [isShowModal, setIsShowModal] = useState(false);
   const [modalData, setModalData] = useState<IModalData>();
 
-  const [errName, setErrName] = useState('');
   const [errUserName, setErrUserName] = useState('');
-  const [errEmail, setErrEmail] = useState('');
   const [errPassword, setErrPassword] = useState('');
-  const [errRPassword, setErrRPassword] = useState('');
 
-  const userNameInputRef = useRef<TextInput>(null);
-  const emailInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
-  const rPasswordInputRef = useRef<TextInput>(null);
 
   const resetErrors = useCallback(() => {
-    setErrName('');
     setErrUserName('');
-    setErrEmail('');
     setErrPassword('');
-    setErrRPassword('');
   }, []);
 
   const setErrors = useCallback((errors) => {
-    errors.name && setErrName(errors.name);
-    errors.email && setErrEmail(errors.email);
     errors.userName && setErrUserName(errors.userName);
     errors.password && setErrPassword(errors.password);
-    errors.rPassword && setErrRPassword(errors.rPassword);
   }, []);
 
   const handleMessageModal = useCallback((data: IModalData) => {
@@ -70,26 +55,21 @@ const SignUp: React.FC = () => {
     }
   }, [modalData?.status, navigate]);
 
-  const handleSignUp = useCallback(async () => {
+  const handleSignIn = useCallback(async () => {
     resetErrors();
-    const signUpData = { name, email, password, userName };
     try {
-      await formValidation({ ...signUpData, rPassword });
-      await signUp(signUpData);
-      handleMessageModal({
-        message:
-          'Usuário cadastrado com sucesso, você já pode entrar usando suas credenciais',
-        titleButton: 'Voltar para tela inicial',
-        status: 'success',
-      });
+      await formValidation({ userName, password });
+      await signIn({ userName, password });
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
         setErrors(getValidationErros(err));
-      } else if (err.response?.data.error === 'Bad Request') {
-        err.response.data.validation.login &&
-          setErrUserName('Esse username já está em uso');
-        err.response.data.validation.email &&
-          setErrEmail('Esse email já está em uso');
+      } else if (err.response?.data.status === 403) {
+        handleMessageModal({
+          message:
+            'Credenciais inválidas, verifique seu username e digite novamente sua senha',
+          titleButton: 'Ok',
+          status: 'error',
+        });
       } else {
         handleMessageModal({
           message:
@@ -99,17 +79,7 @@ const SignUp: React.FC = () => {
         });
       }
     }
-  }, [
-    email,
-    handleMessageModal,
-    name,
-    password,
-    rPassword,
-    resetErrors,
-    setErrors,
-    signUp,
-    userName,
-  ]);
+  }, [handleMessageModal, password, resetErrors, setErrors, signIn, userName]);
 
   return (
     <S.Container>
@@ -132,35 +102,7 @@ const SignUp: React.FC = () => {
 
       <S.Form>
         <Input
-          iconName="person"
-          placeholder="Digite seu nome"
-          returnKeyType="next"
-          autoCorrect={false}
-          value={name}
-          errMsg={errName}
-          onChangeText={setName}
-          onSubmitEditing={() => {
-            emailInputRef.current?.focus();
-          }}
-        />
-        <Input
-          iconName="mail"
-          ref={emailInputRef}
-          placeholder="Digite seu email"
-          autoCorrect={false}
-          autoCapitalize="none"
-          keyboardType="email-address"
-          returnKeyType="next"
-          errMsg={errEmail}
-          value={email}
-          onChangeText={setEmail}
-          onSubmitEditing={() => {
-            userNameInputRef.current?.focus();
-          }}
-        />
-        <Input
           iconName="account-box"
-          ref={userNameInputRef}
           placeholder="Digite seu username"
           autoCorrect={false}
           autoCapitalize="none"
@@ -177,31 +119,18 @@ const SignUp: React.FC = () => {
           iconName="lock"
           placeholder="Digite sua senha"
           secureTextEntry
-          returnKeyType="next"
+          returnKeyType="send"
           errMsg={errPassword}
           value={password}
           onChangeText={setPassword}
-          onSubmitEditing={() => {
-            rPasswordInputRef.current?.focus();
-          }}
-        />
-        <Input
-          ref={rPasswordInputRef}
-          placeholder="Digite sua novamente senha"
-          iconName="enhanced-encryption"
-          secureTextEntry
-          returnKeyType="send"
-          errMsg={errRPassword}
-          value={rPassword}
-          onChangeText={setRPassword}
-          onSubmitEditing={handleSignUp}
+          onSubmitEditing={handleSignIn}
         />
         <S.ButtonGroup>
-          <ButtonFill onPress={handleSignUp} loading={loading}>
-            Faça seu cadastro
+          <ButtonFill onPress={handleSignIn} loading={loading}>
+            Entrar no sistema
           </ButtonFill>
-          <ButtonBorder onPress={() => navigate('SignIn')}>
-            Já tenho conta!
+          <ButtonBorder onPress={() => navigate('SignUp')}>
+            Não tenho conta!
           </ButtonBorder>
         </S.ButtonGroup>
       </S.Form>
@@ -209,4 +138,4 @@ const SignUp: React.FC = () => {
   );
 };
 
-export default SignUp;
+export default SignIn;
