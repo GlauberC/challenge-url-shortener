@@ -6,7 +6,7 @@ export const Container = styled.View`
   justify-content: center;
 `;
 export const Form = styled.View`
-  padding: 20px 10px;
+  padding: 20px 0;
 `;
 export const ButtonGroup = styled.View`
   padding: 40px 0;

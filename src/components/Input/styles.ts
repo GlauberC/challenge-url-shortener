@@ -19,6 +19,7 @@ export const Container = styled.View`
   flex-direction: row;
   padding: 5px 10px;
   margin-top: 20px;
+  margin: 20px 10px 0 10px;
 `;
 export const TextInputBox = styled.TextInput`
   flex: 1;

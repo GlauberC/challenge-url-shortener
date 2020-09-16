@@ -5,7 +5,7 @@ export const Container = styled.ScrollView`
   background: ${(p) => p.theme.colors.background};
 `;
 export const Form = styled.View`
-  padding: 20px 10px;
+  padding: 20px 0;
 `;
 export const ButtonGroup = styled.View`
   padding: 40px 0;
