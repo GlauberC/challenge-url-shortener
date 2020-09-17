@@ -52,8 +52,10 @@ export const AuthProvider: React.FC = ({ children }) => {
       await AsyncStorage.getItem('@urlShortener:TOKEN'),
       await AsyncStorage.getItem('@urlShortener:USERINFO'),
     ]);
-    if (values[0] && values[1]) {
-      const data = { token: values[0], user: JSON.parse(values[1]) };
+    const [token, userValues] = values;
+    if (token && userValues) {
+      const data = { token, user: JSON.parse(userValues) };
+      api.defaults.headers.Authorization = token;
       setUser(data);
     }
   }, []);
@@ -96,6 +98,7 @@ export const AuthProvider: React.FC = ({ children }) => {
         token,
         user: saveUserData,
       });
+      api.defaults.headers.Authorization = token;
 
       setLoading(false);
     } catch (err) {

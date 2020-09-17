@@ -7,6 +7,7 @@ export const Container = styled.TouchableOpacity`
   justify-content: center;
   align-items: center;
   height: 40px;
+  width: 130px;
 `;
 export const Label = styled.Text`
   text-align: center;

@@ -9,7 +9,7 @@ interface IButton extends TouchableOpacityProps {
   loading?: boolean;
 }
 
-const ButtonFill: React.FC<IButton> = ({ children, loading, ...rest }) => {
+const MiniButtonFill: React.FC<IButton> = ({ children, loading, ...rest }) => {
   const { colors } = useTheme();
   return (
     <S.Container {...rest} activeOpacity={0.5}>
@@ -22,4 +22,4 @@ const ButtonFill: React.FC<IButton> = ({ children, loading, ...rest }) => {
   );
 };
 
-export default ButtonFill;
+export default MiniButtonFill;

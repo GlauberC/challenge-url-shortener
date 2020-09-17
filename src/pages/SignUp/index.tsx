@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { TextInput, Modal } from 'react-native';
+import { TextInput, Keyboard } from 'react-native';
 import * as Yup from 'yup';
 
 import { useNavigation } from '@react-navigation/native';
@@ -10,14 +10,16 @@ import formValidation from './formValidation';
 import ButtonFill from '../../components/ButtonFill';
 import getValidationErros from '../../../android/app/src/utils/getValidationErros';
 import ButtonBorder from '../../components/ButtonBorder';
+import AlertModal from '../../components/AlertModal';
 
 interface IModalData {
   titleButton: string;
   message: string;
-  status: 'success' | 'error';
+  handlePressed(): void;
 }
 
 const SignUp: React.FC = () => {
+  Keyboard.dismiss();
   const { navigate } = useNavigation();
   const { signUp, loading } = useAuth();
 
@@ -57,31 +59,19 @@ const SignUp: React.FC = () => {
     errors.rPassword && setErrRPassword(errors.rPassword);
   }, []);
 
-  const handleMessageModal = useCallback((data: IModalData) => {
-    setModalData(data);
-    setIsShowModal(true);
-  }, []);
-
-  const handleOkModal = useCallback(() => {
-    if (modalData?.status === 'error') {
-      setIsShowModal(false);
-    } else {
-      navigate('Intro');
-    }
-  }, [modalData?.status, navigate]);
-
   const handleSignUp = useCallback(async () => {
     resetErrors();
     const signUpData = { name, email, password, userName };
     try {
       await formValidation({ ...signUpData, rPassword });
       await signUp(signUpData);
-      handleMessageModal({
+      setModalData({
         message:
-          'Usuário cadastrado com sucesso, você já pode entrar usando suas credenciais',
-        titleButton: 'Voltar para tela inicial',
-        status: 'success',
+          'Usuário criado com succeso. Você já pode logar no sistema usando seu username e senha',
+        titleButton: 'Ir para a página de login',
+        handlePressed: () => navigate('SignIn'),
       });
+      setIsShowModal(true);
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
         setErrors(getValidationErros(err));
@@ -91,18 +81,19 @@ const SignUp: React.FC = () => {
         err.response.data.validation.email &&
           setErrEmail('Esse email já está em uso');
       } else {
-        handleMessageModal({
+        setModalData({
           message:
-            'Houve um erro inesperado, verifique sua conexão com a internet ou tente novamente mais tarde ',
-          titleButton: 'Ok',
-          status: 'error',
+            'Houve um erro inesperado, verifique sua conexão com a internet ou tente novamente mais tarde',
+          titleButton: 'OK',
+          handlePressed: () => setIsShowModal(false),
         });
+        setIsShowModal(true);
       }
     }
   }, [
     email,
-    handleMessageModal,
     name,
+    navigate,
     password,
     rPassword,
     resetErrors,
@@ -113,22 +104,15 @@ const SignUp: React.FC = () => {
 
   return (
     <S.Container>
-      <Modal
-        visible={isShowModal}
-        statusBarTranslucent
-        transparent
-        animationType="fade"
-      >
-        <S.ModalShadow>
-          <S.ModalContainer>
-            <S.ModalText>{modalData?.message}</S.ModalText>
-
-            <ButtonBorder onPress={handleOkModal}>
-              {modalData?.titleButton}
-            </ButtonBorder>
-          </S.ModalContainer>
-        </S.ModalShadow>
-      </Modal>
+      {modalData?.titleButton && (
+        <AlertModal
+          message={modalData.message}
+          titleButton={modalData.titleButton}
+          toggleState={isShowModal}
+          close={() => setIsShowModal(false)}
+          handlePressed={modalData.handlePressed}
+        />
+      )}
 
       <S.Form>
         <Input
@@ -187,7 +171,7 @@ const SignUp: React.FC = () => {
         />
         <Input
           ref={rPasswordInputRef}
-          placeholder="Digite sua novamente senha"
+          placeholder="Digite novamente sua senha"
           iconName="enhanced-encryption"
           secureTextEntry
           returnKeyType="send"
