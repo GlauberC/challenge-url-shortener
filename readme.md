@@ -24,5 +24,5 @@ yarn android
 Caso não funcione, executar em outra aba do navegador:
 
 ```sh
-yarn starn
+yarn start
 ```
