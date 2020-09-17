@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { TextInput } from 'react-native';
+import { TextInput, Keyboard } from 'react-native';
 import * as Yup from 'yup';
 
 import { useNavigation } from '@react-navigation/native';
@@ -19,6 +19,7 @@ interface IModalData {
 }
 
 const SignUp: React.FC = () => {
+  Keyboard.dismiss();
   const { navigate } = useNavigation();
   const { signUp, loading } = useAuth();
 
@@ -66,7 +67,7 @@ const SignUp: React.FC = () => {
       await signUp(signUpData);
       setModalData({
         message:
-          'Usuário criado com succeso. Você já pode logar no sistema usando o ser username e senha',
+          'Usuário criado com succeso. Você já pode logar no sistema usando seu username e senha',
         titleButton: 'Ir para a página de login',
         handlePressed: () => navigate('SignIn'),
       });
@@ -170,7 +171,7 @@ const SignUp: React.FC = () => {
         />
         <Input
           ref={rPasswordInputRef}
-          placeholder="Digite sua novamente senha"
+          placeholder="Digite novamente sua senha"
           iconName="enhanced-encryption"
           secureTextEntry
           returnKeyType="send"

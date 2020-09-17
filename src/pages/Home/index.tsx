@@ -1,12 +1,19 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 
 import { useNavigation } from '@react-navigation/native';
-import { FlatList, TextInput, ActivityIndicator, Linking } from 'react-native';
+import {
+  FlatList,
+  TextInput,
+  ActivityIndicator,
+  Linking,
+  Keyboard,
+} from 'react-native';
 import Clipboard from '@react-native-community/clipboard';
 import { format } from 'date-fns';
 import * as Yup from 'yup';
-
 import { useTheme } from 'styled-components/native';
+import Icons from 'react-native-vector-icons/MaterialIcons';
+
 import { useAuth } from '../../providers/auth.provider';
 
 import { getCutUrl } from '../../services/apiShorten';
@@ -23,6 +30,8 @@ import AlertModal from '../../components/AlertModal';
 interface IModalData {
   titleButton: string;
   message: string;
+  yesNoOption?: boolean;
+  handlePressed(): void;
 }
 
 interface IRequestUrl {
@@ -43,7 +52,7 @@ const Home: React.FC = () => {
   const { user } = useAuth();
   const { navigate } = useNavigation();
 
-  const [url, setUrl] = useState('http://google.com');
+  const [url, setUrl] = useState('');
   const [errUrl, setErrUrl] = useState('');
 
   const [loading, setLoading] = useState(false);
@@ -90,6 +99,7 @@ const Home: React.FC = () => {
   }, [loadUrls]);
 
   const handleShortenUrl = useCallback(async () => {
+    Keyboard.dismiss();
     setErrUrl('');
     setLoadingShorten(true);
     try {
@@ -128,11 +138,31 @@ const Home: React.FC = () => {
           message:
             'Houve um erro inesperado, verifique sua conexão com a internet ou tente novamente mais tarde',
           titleButton: 'OK',
+          handlePressed: () => setIsShowModal(false),
         });
         setIsShowModal(true);
       }
     }
   }, [navigate, url, urls, user]);
+
+  const handleDeleteUrl = useCallback(
+    async (id: string) => {
+      try {
+        await api.delete(`url/${id}`);
+        setUrls(urls.filter((u) => u.id !== id));
+      } catch (err) {
+        setModalData({
+          message:
+            'Não foi possível deletar esse URL, verifique sua conexão de internet ou tente novamente mais tarde',
+          titleButton: 'OK',
+          yesNoOption: false,
+          handlePressed: () => setIsShowModal(false),
+        });
+        setIsShowModal(true);
+      }
+    },
+    [urls],
+  );
 
   const getFromClipboard = useCallback(async () => {
     const content = await Clipboard.getString();
@@ -148,7 +178,8 @@ const Home: React.FC = () => {
           titleButton={modalData.titleButton}
           toggleState={isShowModal}
           close={() => setIsShowModal(false)}
-          handlePressed={() => setIsShowModal(false)}
+          yesNoOption={modalData.yesNoOption}
+          handlePressed={() => modalData.handlePressed}
         />
       )}
       <Input
@@ -172,6 +203,7 @@ const Home: React.FC = () => {
           Encurtar URL
         </MiniButtonFill>
       </S.ButtonGroup>
+
       {loading ? (
         <ActivityIndicator color={colors.prim} size="large" />
       ) : (
@@ -180,12 +212,19 @@ const Home: React.FC = () => {
           keyExtractor={(item) => item.id}
           ListHeaderComponent={() => (
             <>
-              <S.Message>Ultimos urls encurtados</S.Message>
+              {urls.length > 0 && (
+                <S.Message>Ultimos urls encurtados</S.Message>
+              )}
             </>
           )}
           renderItem={({ item }) => (
             <S.UrlContainer>
-              <S.UrlDate>{item.date}</S.UrlDate>
+              <S.DateView>
+                <S.UrlDate>{item.date}</S.UrlDate>
+                <S.IconButton onPress={() => handleDeleteUrl(item.id)}>
+                  <Icons size={18} name="delete" color={colors.text1} />
+                </S.IconButton>
+              </S.DateView>
               <S.LabeledView>
                 <S.Label>Original: </S.Label>
                 <S.UrlOriginal>{item.original}</S.UrlOriginal>

@@ -31,8 +31,7 @@ const ConfirmShorten: React.FC<NavigationProps> = ({ route, navigation }) => {
     <S.Container>
       {url && (
         <>
-          {console.log(url)}
-          <S.Message>Url encurtado com succeso</S.Message>
+          <S.Message>URL encurtado com succeso</S.Message>
           <S.ShortUrlButton
             activeOpacity={0.5}
             onPress={() => openLink(url.shortUrl)}

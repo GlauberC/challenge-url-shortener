@@ -23,6 +23,20 @@ export const Message = styled.Text`
 export const UrlContainer = styled.View`
   margin: 30px 10px;
 `;
+export const DateView = styled.View`
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px 5px;
+`;
+export const IconButton = styled.TouchableOpacity`
+  background: ${(p) => p.theme.colors.err};
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 15px;
+`;
 export const UrlDate = styled.Text`
   text-align: center;
   font-size: 20px;

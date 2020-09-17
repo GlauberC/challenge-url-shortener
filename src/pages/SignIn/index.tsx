@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { TextInput } from 'react-native';
+import { TextInput, Keyboard } from 'react-native';
 import * as Yup from 'yup';
 
 import { useNavigation } from '@react-navigation/native';
@@ -21,8 +21,8 @@ const SignIn: React.FC = () => {
   const { navigate } = useNavigation();
   const { signIn, loading } = useAuth();
 
-  const [userName, setUserName] = useState('userteste');
-  const [password, setPassword] = useState('user123');
+  const [userName, setUserName] = useState('');
+  const [password, setPassword] = useState('');
 
   const [isShowModal, setIsShowModal] = useState(false);
   const [modalData, setModalData] = useState<IModalData>();
@@ -43,10 +43,11 @@ const SignIn: React.FC = () => {
   }, []);
 
   const handleSignIn = useCallback(async () => {
+    Keyboard.dismiss();
     resetErrors();
     try {
       await formValidation({ userName, password });
-      await signIn({ userName, password });
+      await signIn({ userName: userName.toLowerCase(), password });
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
         setErrors(getValidationErros(err));
