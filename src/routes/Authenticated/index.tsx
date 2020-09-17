@@ -5,6 +5,7 @@ import { useTheme } from 'styled-components/native';
 import Icons from 'react-native-vector-icons/MaterialIcons';
 import AlertModal from '../../components/AlertModal';
 import Home from '../../pages/Home';
+import ConfirmShorten from '../../pages/ConfirmShorten';
 import { useAuth } from '../../providers/auth.provider';
 import * as S from './styles';
 
@@ -27,16 +28,6 @@ const Authenticated: React.FC = () => {
       />
       <Stack.Navigator
         screenOptions={{
-          headerLeft: () => (
-            <S.IconButton>
-              <Icons
-                name="exit-to-app"
-                size={28}
-                color={colors.prim}
-                onPress={() => setIsShowAlert(true)}
-              />
-            </S.IconButton>
-          ),
           headerTitleAlign: 'center',
           headerTintColor: colors.text1,
           headerStyle: { backgroundColor: colors.background },
@@ -45,7 +36,24 @@ const Authenticated: React.FC = () => {
         <Stack.Screen
           name="Home"
           component={Home}
-          options={{ title: `Olá ${user?.user.userName}` }}
+          options={{
+            title: `Olá ${user?.user.userName}`,
+            headerLeft: () => (
+              <S.IconButton>
+                <Icons
+                  name="exit-to-app"
+                  size={28}
+                  color={colors.prim}
+                  onPress={() => setIsShowAlert(true)}
+                />
+              </S.IconButton>
+            ),
+          }}
+        />
+        <Stack.Screen
+          name="ConfirmShorten"
+          component={ConfirmShorten}
+          options={{ title: 'Url encurtado' }}
         />
       </Stack.Navigator>
     </>
