@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const apiKey = '324b81b1258fe8034519fdf545df23f7705c2';
+const apiKey = '6e8ab99e383483f5cf859eca75104cf3';
 
 const api = axios.create({
   baseURL: `https://cutt.ly/api`,
