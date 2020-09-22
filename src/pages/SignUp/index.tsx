@@ -19,7 +19,6 @@ interface IModalData {
 }
 
 const SignUp: React.FC = () => {
-  Keyboard.dismiss();
   const { navigate } = useNavigation();
   const { signUp, loading } = useAuth();
 
@@ -60,6 +59,7 @@ const SignUp: React.FC = () => {
   }, []);
 
   const handleSignUp = useCallback(async () => {
+    Keyboard.dismiss();
     resetErrors();
     const signUpData = { name, email, password, userName };
     try {
